@@ -2,11 +2,13 @@ package Game;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Timer;
+import javax.swing.Timer;
 
 import javax.swing.JPanel;
 
@@ -15,8 +17,10 @@ public class Play extends JPanel implements KeyListener, ActionListener {
 	private boolean play = false;
 	private int score = 0;
 	
+	private int totalBrick = 21;
+	
 	private Timer time;
-	private int delay = 0;
+	private int delay = 10;
 	
 	private int playerX = 310;
 	
@@ -25,12 +29,17 @@ public class Play extends JPanel implements KeyListener, ActionListener {
 	private int ballXdir = -1;
 	private int ballYdir = -2;
 	
+	private Block block;
+	
+	
 	public Play(){
+		
+		block = new Block(3, 7);
 		addKeyListener(this);
 		setFocusable(true);
 		setFocusTraversalKeysEnabled(false);
-//		time = new Timer(delay, this);
-//		time.start();
+		time = new Timer(delay, this);
+		time.start();
 	}
 	
 	public void paint(Graphics G){
@@ -38,6 +47,9 @@ public class Play extends JPanel implements KeyListener, ActionListener {
 		//bground
 		G.setColor(Color.gray);
 		G.fillRect(1, 1, 692, 592);
+		
+		//drawing map
+		block.draw((Graphics2D)G);
 		
 		//borders..
 		G.setColor(Color.yellow);
@@ -51,13 +63,34 @@ public class Play extends JPanel implements KeyListener, ActionListener {
 		
 		//the ball
 		G.setColor(Color.yellow);
-		G.fillRect(ballposX, ballposY, 20, 20);
+		G.fillOval(ballposX, ballposY, 20, 20);
+		
+		G.dispose();
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
+
+		time.start();//start
+		if(play){
+			if(new Rectangle(ballposX,ballposY, 20, 20).intersects(new Rectangle(playerX, 550, 100, 8))){
+				ballYdir = -ballYdir;
+			}
+				ballposX += ballXdir;
+				ballposY += ballYdir;
+				
+				if(0 > ballposX){
+					ballXdir = -ballXdir;
+				}
+				if(0 > ballposY){
+					ballYdir = -ballYdir;
+				}
+				if(670 < ballposX){
+					ballXdir = -ballXdir;
+				}
+			
+		}
+		repaint();//refresh
 	}
 
 	@Override
